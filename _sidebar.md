@@ -18,7 +18,9 @@
 
 * 数据库
 
-  * [mysql]
+
+  * [计算机网络](./docs/c-1计算机网络.md)
+  * [MySQL](./docs/MySQL.md)
   * [redis]
 
 * 框架
