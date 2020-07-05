@@ -18,8 +18,6 @@
 
 * 数据库
 
-
-  * [计算机网络](./docs/c-1计算机网络.md)
   * [MySQL](./docs/MySQL.md)
   * [redis]
 
@@ -30,7 +28,11 @@
   * [SpringBoot]
   * [SpringCloud]
   * [Vue]
-  
+  *
+* 工具
+
+  * [git](./docs/Git.md)
+  * [maven]
 
   
 
