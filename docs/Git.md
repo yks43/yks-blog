@@ -1,10 +1,11 @@
 ## Git
 
-### doctify更新
+### doctify
+
+文档：https://docsify.js.org/#/zh-cn/quickstart
 
 第一次执行
 ``` bash
-
 git init
 git add .
 git commit -m "first-commmit"
