@@ -27,11 +27,10 @@
   * [maven](./docs/工具/maven.md)
 
 * 内功
-  * [Java数据结构](./docs/算法/数据结构.md)
-  * [Java算法](./docs/内功/Java算法.md)
-  * [Java设计模式](./docs/内功/设计模式.md)
-
-* 操作系统
+  * [数据结构](./docs/内功/数据结构.md)
+  * [算法](./docs/内功/算法.md)
+  * [设计模式](./docs/内功/设计模式.md)
+  * [计算机网络](./docs/内功/计算机网络.md)
   * [操作系统](./docs/OS/操作系统.md)
   * [Linux](./docs/OS/Linux.md)
 
