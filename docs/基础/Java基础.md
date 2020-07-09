@@ -20,7 +20,15 @@
 
 *   对象类型和引用类型之间具有继承（类）/实现（接口）的关系；
 
-## 类的加载
+多态的必要条件：
+
+
+
+## 枚举
+
+## 注解
+
+## 泛型
 
 ## 异常
 
@@ -97,14 +105,53 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 
 回答：字符流是由 Java 虚拟机将字节转换得到的，问题就出在这个过程还算是非常耗时，并且，如果我们不知道编码类型就很容易出现乱码问题。所以， I/O 流就干脆提供了一个直接操作字符的接口，方便我们平时对字符进行流操作。如果音频文件、图片等媒体文件用字节流比较好，如果涉及到字符的话使用字符流比较好。
 
+## 类的加载
+
 ## 反射
 
+#### 为什么需要反射
 
-## 注解
+1.  提高程序的灵活性
+2.  屏蔽掉实现的细节，让使用者更加方便好用
 
-## 枚举
+#### API
 
-## 泛型
+##### 获取Class对象的几种途径
+
+获取class文件对象的方式：
+    1：Object类的getClass()方法
+    2：数据类型的静态属性class
+    3：Class类中的静态方法：public static Class ForName(String className)
+
+##### 通过Class对象创建出对象，获取出构造器，成员变量，方法
+
+获取成员变量并使用
+    1: 获取Class对象
+    2：通过Class对象获取Constructor对象
+    3：Object obj = Constructor.newInstance()创建对象
+    4：Field field = Class.getField("指定变量名")获取单个成员变量对象
+    5：field.set(obj,"") 为obj对象的field字段赋值
+如果需要访问私有或者默认修饰的成员变量
+    1:Class.getDeclaredField()获取该成员变量对象
+    2:setAccessible() 暴力访问 
+
+##### 通过反射的API修改成员变量的值，调用方法
+
+通过反射调用成员方法
+    1：获取Class对象
+    2：通过Class对象获取Constructor对象
+    3：Constructor.newInstance()创建对象
+    4：通过Class对象获取Method对象 ------getMethod("方法名");
+    5: Method对象调用invoke方法实现功能
+如果调用的是私有方法那么需要暴力访问
+    1: getDeclaredMethod()
+    2: setAccessiable();   
+
+## JDK1.8新特性
+
+### 函数式编程
+
+### stream
 
 ## 锁
 
