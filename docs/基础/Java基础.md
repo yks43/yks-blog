@@ -70,7 +70,7 @@ Java 中类似于`InputStream`、`OutputStream` 、`Scanner` 、`PrintWriter`等
 
 ## IO
 
-#### 分类
+### 分类
 
 -   按照流的流向分，可以分为输入流和输出流；
 -   按照操作单元划分，可以划分为字节流和字符流；
@@ -89,17 +89,17 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 
 ![](../images/IO结构2.png)
 
-#### 拓展
+### 拓展
 
-##### BIO,NIO,AIO
+#### BIO,NIO,AIO
 
 -   **BIO (Blocking I/O):** 同步阻塞 I/O 模式，数据的读取写入必须阻塞在一个线程内等待其完成。在活动连接数不是特别高（小于单机 1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。因此，我们需要一种更高效的 I/O 处理模型来应对更高的并发量。
 -   **NIO (Non-blocking/New I/O):** NIO 是一种同步非阻塞的 I/O 模型，在 Java 1.4 中引入了 NIO 框架，对应 java.nio 包，提供了 Channel , Selector，Buffer 等抽象。NIO 中的 N 可以理解为 Non-blocking，不单纯是 New。它支持面向缓冲的，基于通道的 I/O 操作方法。 NIO 提供了与传统 BIO 模型中的 `Socket` 和 `ServerSocket` 相对应的 `SocketChannel` 和 `ServerSocketChannel` 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞 I/O 来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发
 -   **AIO (Asynchronous I/O):** AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的 IO 模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步 IO 的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO 操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。
 
-#### 面试题
+### 面试题
 
-###### 既然有了字节流,为什么还要有字符流?
+#### 既然有了字节流,为什么还要有字符流?
 
 问题本质想问：**不管是文件读写还是网络发送接收，信息的最小存储单元都是字节，那为什么 I/O 流操作要分为字节流操作和字符流操作呢？**
 
@@ -109,43 +109,42 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 
 ## 反射
 
-#### 为什么需要反射
+### 为什么需要反射
 
 1.  提高程序的灵活性
 2.  屏蔽掉实现的细节，让使用者更加方便好用
 
-#### API
+### API
 
-##### 获取Class对象的几种途径
+#### 获取Class对象的几种途径
 
-获取class文件对象的方式：
-    1：Object类的getClass()方法
-    2：数据类型的静态属性class
-    3：Class类中的静态方法：public static Class ForName(String className)
+1. Object类的getClass()方法
+2. 数据类型的静态属性class
+3. Class类中的静态方法：public static Class ForName(String className)
 
-##### 通过Class对象创建出对象，获取出构造器，成员变量，方法
+#### 通过Class对象创建出对象，获取出构造器，成员变量，方法
 
 获取成员变量并使用
-    1: 获取Class对象
-    2：通过Class对象获取Constructor对象
-    3：Object obj = Constructor.newInstance()创建对象
-    4：Field field = Class.getField("指定变量名")获取单个成员变量对象
-    5：field.set(obj,"") 为obj对象的field字段赋值
+1. 获取Class对象
+2. 通过Class对象获取Constructor对象
+3. Object obj = Constructor.newInstance()创建对象
+4. Field field = Class.getField("指定变量名")获取单个成员变量对象
+5. field.set(obj,"") 为obj对象的field字段赋值
 如果需要访问私有或者默认修饰的成员变量
-    1:Class.getDeclaredField()获取该成员变量对象
-    2:setAccessible() 暴力访问 
+1. Class.getDeclaredField()获取该成员变量对象
+2. setAccessible() 暴力访问 
 
-##### 通过反射的API修改成员变量的值，调用方法
+#### 通过反射的API修改成员变量的值，调用方法
 
 通过反射调用成员方法
-    1：获取Class对象
-    2：通过Class对象获取Constructor对象
-    3：Constructor.newInstance()创建对象
-    4：通过Class对象获取Method对象 ------getMethod("方法名");
-    5: Method对象调用invoke方法实现功能
+1. 获取Class对象
+2. 通过Class对象获取Constructor对象
+3. Constructor.newInstance()创建对象
+4. 通过Class对象获取Method对象 ------getMethod("方法名");
+5. Method对象调用invoke方法实现功能
 如果调用的是私有方法那么需要暴力访问
-    1: getDeclaredMethod()
-    2: setAccessiable();   
+1. getDeclaredMethod()
+2. setAccessiable();   
 
 ## JDK1.8新特性
 
