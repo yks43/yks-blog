@@ -36,27 +36,27 @@ Java异常层次结构图
 
 ![](..\images\异常体系.png)
 
-#### Error（错误）
+### Error（错误）
 
 **是程序无法处理的错误**，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。例如，Java 虚拟机运行错误（Virtual MachineError），当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。
 
-#### Execptions（异常）
+### Execptions（异常）
 
 **是程序本身可以处理的异常**。Exception 类有一个重要的子类 **RuntimeException**。RuntimeException 异常由 Java 虚拟机抛出。**NullPointerException**（要访问的变量没有引用任何对象时，抛出该异常）、**ArithmeticException**（算术运算异常，一个整数除以 0 时，抛出该异常）和 **ArrayIndexOutOfBoundsException** （下标越界异常）。
 
-#### 区别
+### 区别
 
 >    **异常能被程序本身处理，错误是无法处理。**
 
-#### try-catch-finally
+### try-catch-finally
 
 -   **try 块：** 用于捕获异常。其后可接零个或多个 catch 块，如果没有 catch 块，则必须跟一个 finally 块。
 -   **catch 块：** 用于处理 try 捕获到的异常。
 -   **finally 块：** 无论是否捕获或处理异常，finally 块里的语句都会被执行。当在 try 块或 catch 块中遇到 return 语句时，finally 语句块将在方法返回之前被执行。
 
-##### 拓展
+### 拓展
 
-###### try-with-resources(JDK1.7)
+#### try-with-resources(JDK1.7)
 
 >   面对必须要关闭的资源，我们总是应该优先使用try-with-resources而不是`try-finally`。随之产生的代码更简短，更清晰，产生的异常对我们也更有用。`try-with-resources`语句让我们更容易编写必须要关闭的资源的代码，若采用`try-finally`则几乎做不到这点。
 
@@ -64,7 +64,7 @@ Java 中类似于`InputStream`、`OutputStream` 、`Scanner` 、`PrintWriter`等
 
 **多个资源需要关闭的时候，通过使用分号分隔**
 
-#### 面试题
+### 面试题
 
 当 try 语句和 finally 语句中都有 return 语句时，在方法返回之前，finally 语句的内容将被执行，并且 finally 语句的返回值将会覆盖原始的返回值。
 
