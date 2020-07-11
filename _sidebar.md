@@ -10,7 +10,7 @@
 * 数据库
 
   * [MySQL](./docs/数据库/MySQL.md)
-  * [redis](./docs/数据库/Redis.md)
+  * [Redis](./docs/数据库/Redis.md)
 
 * 框架
   * [Spring](./docs/框架/Spring.md)
