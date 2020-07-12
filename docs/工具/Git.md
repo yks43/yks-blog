@@ -85,7 +85,7 @@ m 'xxx' 来提交合并。
 ### git log
 > 查看版本提交记录
 ```bash
-git log
+git log 
 ```
 查看整个项⽬的版本提交记录，它⾥⾯包含了提交⼈、⽇期、提交原因等信息；
 提交记录可能会⾮常多，按 J 键往下翻，按 K 键往上翻，按 Q 键退出查看
@@ -107,7 +107,7 @@ build/
 以上内容的意思是 Git 将忽略 demo.html ⽂件 和build/ ⽬录，这些内容不会被推送到服务器上
 
 
-### doctify
+# doctify
 
 文档：https://docsify.js.org/#/zh-cn/quickstart
 
