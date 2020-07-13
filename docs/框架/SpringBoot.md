@@ -17,6 +17,7 @@
 
 ## 为什么需要SpringBoot
 > Spring Framework旨在简化J2EE企业应用程序开发。Spring Boot Framework旨在简化Spring开发。
+
 ### 引申概念
 #### EJB（Enterprise JavaBean）
 > 企业级JavaBean（Enterprise JavaBean, EJB）是一个用来构筑企业级应用的服务器端可被管理组件。 Java企业版API（Java Enterprise Edition）中提供了对EJB的规范。 EJB是一个封装有某个应用程序之业务逻辑服务器端组件。
