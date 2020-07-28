@@ -24,7 +24,8 @@
   * [Dubbo](./docs/框架/Dubbo.md)
 * 工具
 
-  * [Git2](https://github.com/yks43/yks-blog/tree/master/docs/工具/Git.md)
+  * [Git](./docs/工具/Git.md)
+  [git](./docs/db/MySQL.md)
   * [Maven](./docs/工具/Maven.md)
   * [Docker](./docs/工具/Docker.md)
 
