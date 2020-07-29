@@ -8,7 +8,9 @@
 ### bug
 #### 导入依赖报错
 1. 切换镜像
+
 ```xml
+
 <mirror>	
     <id>nexus-aliyun</id>	
     <mirrorOf>*</mirrorOf>	
@@ -42,6 +44,8 @@
     <url>http://repo2.maven.org/maven2/</url>
     <mirrorOf>central</mirrorOf>
 </mirror>
+
 ```
-2. 删除*.lastUpdated文件
+
+2. 删除.lastUpdated文件
 3. Reimport All Maven Projects
