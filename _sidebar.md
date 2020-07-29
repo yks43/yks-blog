@@ -25,8 +25,7 @@
 * 工具
 
   * [Git](./docs/工具/Git.md)
-  [git](./docs/db/MySQL.md)
-  * [Maven](./docs/工具/Maven.md)
+  * [Maven](docs/工具/Maven.md)
   * [Docker](./docs/工具/Docker.md)
 
 * 内功
