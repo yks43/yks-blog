@@ -70,3 +70,13 @@
 
 2. 删除.lastUpdated文件
 3. Reimport All Maven Projects
+
+#### Could not transfer artifact xxx from/to xxx
+问题描述：
+
+解决步骤：
+打开_remote.repositories文件
+把public=改成central=(nexus 表示为私服，central表示为中央仓库)
+删除.lastUpdated文件
+针对大量jar包问题，直接将仓库清空，或者换一个新的本地仓库
+
