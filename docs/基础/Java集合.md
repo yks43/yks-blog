@@ -17,7 +17,7 @@
 3. Map
 * HashMap： DK1.8 之前 HashMap 由数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）。JDK1.8 以后在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为 8）（将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行数组扩容，而不是转换为红黑树）时，将链表转化为红黑树，以减少搜索时间
 * LinkedHashMap： LinkedHashMap 继承自 HashMap，所以它的底层仍然是基于拉链式散列结构即由数组和链表或红黑树组成。另外，LinkedHashMap 在上面结构的基础上，增加了一条双向链表，使得上面的结构可以保持键值对的插入顺序。同时通过对链表进行相应的操作，实现了访问顺序相关逻辑。
-* Hashtable： 数组+链表组成的，数组是 HashTable 的主体，链表则是主要为了解决哈希冲突而存在的
+* HashTable： 数组+链表组成的，数组是 HashTable 的主体，链表则是主要为了解决哈希冲突而存在的
 * TreeMap： 红黑树（自平衡的排序二叉树）
 ## 如何选用集合
 主要根据集合的特点来选用，比如我们需要根据键值获取到元素值时就选用 Map 接口下的集合，需要排序时选择 TreeMap,不需要排序时就选择 HashMap,需要保证线程安全就选用 ConcurrentHashMap。
@@ -58,11 +58,11 @@ map.put(3, "PHP");
 Iterator<Map.Entry<Integer, String>> iterator = map.entrySet().iterator();
 while (iterator.hasNext()) {
   Map.Entry<Integer, String> entry = iterator.next();
-  System.out.println(entry.getKey() + entry.getValue());
+  System.out.print(entry.getKey() + entry.getValue());
 }
 ```
 ## 哪些集合线程不安全？怎么解决？
-常用的 Arraylist,LinkedList,Hashmap,HashSet,TreeSet,TreeMap，PriorityQueue都不是线程安全的，可以使用线程安全的集合来替代
+常用的 ArrayList,LinkedList,Hashmap,HashSet,TreeSet,TreeMap，PriorityQueue都不是线程安全的，可以使用线程安全的集合来替代
 如果要使用线程安全的集合的话， java.util.concurrent 包中提供了很多并发容器供使用：
 * ConcurrentHashMap: 可以看作是线程安全的 HashMap
 * CopyOnWriteArrayList:可以看作是线程安全的 ArrayList，在读多写少的场合性能非常好，远远好于 Vector.

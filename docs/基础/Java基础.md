@@ -542,3 +542,26 @@ CAS 中涉及三个要素：
 ## 移位运算>>和<<
      >> 右移，除以2
      << 左移，乘以2
+
+## ==与equals()
+* 基本数据类型：比较的是值
+* 引用数据类型：
+  * 没有重写equals：比较的是堆内存地址；
+  * 重写equals时，按照重写的规则来比较，重写满足自反性 ，对称性，传递性，一致性，和非null。
+## equals与hashcode
+
+hashCode()这个方法主要是为了更好支持哈希表（HashMap、HashSet、HashTable等）
+
+哈希表的存储原理：
+当我们向哈希表插入一个object时，首先调用hashCode()方法获得该对象的哈希码，通过该哈希码直接定位object在哈希表中的 位置。如果该位置没有对象，将object插入该位置，如果该位置有对象（可能有多个，通过链表实现），则调用equals（）方法将这些对象与object比较，如果相等，则不需要保存object，否则，将该对象插入到该链表中。
+
+所以 equals()相等，则hashCode()必须相等。
+
+重写equals() 方法之后，必须重写HashCode（）方法。
+
+重写HashCode注意：
+如果重写equals()，两个对象equals()方法判断相等，则对应的HashCode也是相等的 如果不等 ，则需要重写HashCode方法。
+hashCode 不能简单到容易造成Hash冲突
+HashCode不能太复杂，以至于影响性能。
+
+
