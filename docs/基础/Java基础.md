@@ -369,7 +369,7 @@ Java异常层次结构图
 
 ### 区别
 
->    **异常能被程序本身处理，错误是无法处理。**
+> 异常能被程序本身处理，错误是无法处理。
 
 ### try-catch-finally
 
@@ -386,6 +386,7 @@ Java异常层次结构图
 Java 中类似于`InputStream`、`OutputStream` 、`Scanner` 、`PrintWriter`等的资源都需要我们调用`close()`方法来手动关闭，一般情况下我们都是通过`try-catch-finally`语句来实现这个需求
 
 **多个资源需要关闭的时候，通过使用分号分隔**
+
 
 ### 面试题
 
@@ -420,20 +421,15 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 -   **NIO (Non-blocking/New I/O):** NIO 是一种同步非阻塞的 I/O 模型，在 Java 1.4 中引入了 NIO 框架，对应 java.nio 包，提供了 Channel , Selector，Buffer 等抽象。NIO 中的 N 可以理解为 Non-blocking，不单纯是 New。它支持面向缓冲的，基于通道的 I/O 操作方法。 NIO 提供了与传统 BIO 模型中的 `Socket` 和 `ServerSocket` 相对应的 `SocketChannel` 和 `ServerSocketChannel` 两种不同的套接字通道实现,两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞 I/O 来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用 NIO 的非阻塞模式来开发
 -   **AIO (Asynchronous I/O):** AIO 也就是 NIO 2。在 Java 7 中引入了 NIO 的改进版 NIO 2,它是异步非阻塞的 IO 模型。异步 IO 是基于事件和回调机制实现的，也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步 IO 的缩写，虽然 NIO 在网络操作中，提供了非阻塞的方法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO 操作本身是同步的。查阅网上相关资料，我发现就目前来说 AIO 的应用还不是很广泛，Netty 之前也尝试使用过 AIO，不过又放弃了。
 
-### 面试题
 
-#### 既然有了字节流,为什么还要有字符流?
-
-问题本质想问：**不管是文件读写还是网络发送接收，信息的最小存储单元都是字节，那为什么 I/O 流操作要分为字节流操作和字符流操作呢？**
-
-回答：字符流是由 Java 虚拟机将字节转换得到的，问题就出在这个过程还算是非常耗时，并且，如果我们不知道编码类型就很容易出现乱码问题。所以， I/O 流就干脆提供了一个直接操作字符的接口，方便我们平时对字符进行流操作。如果音频文件、图片等媒体文件用字节流比较好，如果涉及到字符的话使用字符流比较好。
-
-## 类的加载
 
 ## 反射
 
 ### 为什么需要反射
 
+明明我自己能直接new一个对象，为什么它要绕一个圈子，先拿到Class对象，再调用Class对象的方法来创建对象呢，这不是多余吗？
+
+反射的好处：
 1.  提高程序的灵活性
 2.  屏蔽掉实现的细节，让使用者更加方便好用
 
@@ -445,9 +441,10 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 2. 数据类型的静态属性class
 3. Class类中的静态方法：public static Class ForName(String className)
 
-#### 通过Class对象创建出对象，获取出构造器，成员变量，方法
+#### 获取成员变量并使用 
 
-获取成员变量并使用
+通过Class对象创建出对象，获取出构造器，成员变量，方法
+
 1. 获取Class对象
 2. 通过Class对象获取Constructor对象
 3. Object obj = Constructor.newInstance()创建对象
@@ -457,9 +454,10 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 1. Class.getDeclaredField()获取该成员变量对象
 2. setAccessible() 暴力访问 
 
-#### 通过反射的API修改成员变量的值，调用方法
+#### 通过反射调用成员方法 
 
-通过反射调用成员方法
+通过反射的API修改成员变量的值，调用方法
+
 1. 获取Class对象
 2. 通过Class对象获取Constructor对象
 3. Constructor.newInstance()创建对象
@@ -468,6 +466,166 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 如果调用的是私有方法那么需要暴力访问
 1. getDeclaredMethod()
 2. setAccessiable();   
+
+### 反射的一些体现
+
+#### 数据库配置文件修改配置
+```java
+Class.forName("com.mysql.jdbc.Driver");
+
+//获取与数据库连接的对象-Connetcion
+connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/yks43", "root", "root");
+
+//获取执行sql语句的statement对象
+statement = connection.createStatement();
+
+//执行sql语句,拿到结果集
+resultSet = statement.executeQuery("SELECT * FROM users");
+```
+通过反射来加载驱动
+```java
+//获取配置文件的读入流
+InputStream inputStream = UtilsDemo.class.getClassLoader().getResourceAsStream("db.properties");
+
+Properties properties = new Properties();
+properties.load(inputStream);
+
+//获取配置文件的信息
+driver = properties.getProperty("driver");
+url = properties.getProperty("url");
+username = properties.getProperty("username");
+password = properties.getProperty("password");
+
+//加载驱动类
+Class.forName(driver);
+```
+
+#### SpringMVC
+Servlet时的情况：
+```java
+//通过html的name属性，获取到值
+String username = request.getParameter("username");
+String password = request.getParameter("password");
+String gender = request.getParameter("gender");
+
+//复选框和下拉框有多个值，获取到多个值
+String[] hobbies = request.getParameterValues("hobbies");
+String[] address = request.getParameterValues("address");
+
+//获取到文本域的值
+String description = request.getParameter("textarea");
+
+//得到隐藏域的值
+String hiddenValue = request.getParameter("aaa");
+```
+SpringMVC时的情况：
+``` java
+@RequestMapping(value = "/save")
+@ResponseBody
+public String taskSave(PushConfig pushConfig) {
+     // 直接使用  
+       String name= pushConfig.getName();
+}
+```
+
+SpringMVC通过反射做到的，根据参数名去找字段名
+
+如果你的JavaBean的属性名跟传递过来的参数名不一致，那就“自动组装”失败了。因为反射只能根据参数名去找字段名，如果不一致，那肯定set不进去了。所以就组装失败了
+
+### 反射+自定义注解的一段代码实现
+
+使用自定义注解给不同的接口增加权限
+
+```java
+/*添加分类*/
+@permission("添加分类")
+void addCategory(Category category);
+
+/*查找分类*/
+void findCategory(String id);
+
+/*查看分类*/ 
+@permission("查找分类")
+List<Category> getAllCategory();
+```
+返回一个代理的Service对象来处理自定义注解：
+```java
+public class ServiceDaoFactory {
+
+    private static final ServiceDaoFactory factory = new ServiceDaoFactory();
+
+    private ServiceDaoFactory() {
+    }
+
+    public static ServiceDaoFactory getInstance() {
+        return factory;
+    }
+
+
+    //需要判断该用户是否有权限
+    public <T> T createDao(String className, Class<T> clazz, final User user) {
+
+        System.out.println("添加分类进来了！");
+
+        try {
+            //得到该类的类型
+            final T t = (T) Class.forName(className).newInstance();
+            //返回一个动态代理对象出去
+            return (T) Proxy.newProxyInstance(ServiceDaoFactory.class.getClassLoader(), t.getClass().getInterfaces(), new InvocationHandler() {
+
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, PrivilegeException {
+                    //判断用户调用的是什么方法
+                    String methodName = method.getName();
+                    System.out.println(methodName);
+
+                    //得到用户调用的真实方法，注意参数！！！
+                    Method method1 = t.getClass().getMethod(methodName,method.getParameterTypes());
+
+                    //查看方法上有没有注解
+                    permission permis = method1.getAnnotation(permission.class);
+
+                    //如果注解为空，那么表示该方法并不需要权限，直接调用方法即可
+                    if (permis == null) {
+                        return method.invoke(t, args);
+                    }
+
+                    //如果注解不为空，得到注解上的权限
+                    String privilege = permis.value();
+
+                    //设置权限【后面通过它来判断用户的权限有没有自己】
+                    Privilege p = new Privilege();
+                    p.setName(privilege);
+
+                    //到这里的时候，已经是需要权限了，那么判断用户是否登陆了
+                    if (user == null) {
+
+                        //这里抛出的异常是代理对象抛出的，sun公司会自动转换成运行期异常抛出，于是在Servlet上我们根据getCause()来判断是不是该异常，从而做出相对应的提示。
+                        throw new PrivilegeException("对不起请先登陆");
+                    }
+
+                    //执行到这里用户已经登陆了，判断用户有没有权限
+                    Method m = t.getClass().getMethod("findUserPrivilege", String.class);
+                    List<Privilege> list = (List<Privilege>) m.invoke(t, user.getId());
+
+                    //看下权限集合中有没有包含方法需要的权限。使用contains方法，在Privilege对象中需要重写hashCode和equals()
+                    if (!list.contains(p)) {
+                        //这里抛出的异常是代理对象抛出的，sun公司会自动转换成运行期异常抛出，于是在Servlet上我们根据getCause()来判断是不是该异常，从而做出相对应的提示。
+                        throw new PrivilegeException("您没有权限，请联系管理员！");
+                    }
+
+                    //执行到这里的时候，已经有权限了，所以可以放行了
+                    return method.invoke(t, args);
+                }
+            });
+
+        } catch (Exception e) {
+            new RuntimeException(e);
+        }
+        return null;
+    }
+}
+```
 
 ## JDK1.8新特性
 
@@ -535,20 +693,27 @@ CAS 中涉及三个要素：
 
 ### 多个线程能否获取同一把锁
 
-# 常见的问题
-## i++和++i
+# 常见的面试问题
+
+### 既然有了字节流,为什么还要有字符流?
+
+问题本质想问：**不管是文件读写还是网络发送接收，信息的最小存储单元都是字节，那为什么 I/O 流操作要分为字节流操作和字符流操作呢？**
+
+回答：字符流是由 Java 虚拟机将字节转换得到的，问题就出在这个过程还算是非常耗时，并且，如果我们不知道编码类型就很容易出现乱码问题。所以， I/O 流就干脆提供了一个直接操作字符的接口，方便我们平时对字符进行流操作。如果音频文件、图片等媒体文件用字节流比较好，如果涉及到字符的话使用字符流比较好。
+
+### i++和++i
 	 i++ 先赋值在运算,例如 a=i++,先赋值a=i,后运算i=i+1,所以结果是a==1
 	 ++i 先运算在赋值,例如 a=++i,先运算i=i+1,后赋值a=i,所以结果是a==2
-## 移位运算>>和<<
+### 移位运算>>和<<
      >> 右移，除以2
      << 左移，乘以2
 
-## ==与equals()
+### ==与equals()
 * 基本数据类型：比较的是值
 * 引用数据类型：
   * 没有重写equals：比较的是堆内存地址；
   * 重写equals时，按照重写的规则来比较，重写满足自反性 ，对称性，传递性，一致性，和非null。
-## equals与hashcode
+### equals与hashcode
 
 hashCode()这个方法主要是为了更好支持哈希表（HashMap、HashSet、HashTable等）
 
