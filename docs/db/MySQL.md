@@ -1,5 +1,5 @@
 
-## 多表联查
+# 多表联查
 
 内连接
 * 隐式
@@ -9,9 +9,64 @@
 * 左外连接
 * 右外连接
 
+# 存储引擎
+架构图：
+![](../images/存储引擎架构图.jpg)
+## 连接器
+我们要进行查询，第一步就是先去链接数据库，那这个时候就是连接器跟我们对接。
 
+他负责跟客户端建立链接、获取权限、维持和管理连接。
 
-## 索引
+链接的时候会经过TCP握手，然后身份验证，然后我们输入用户名密码就好了。
+
+验证ok后，我们就连上了这个MySQL服务了，但是这个时候我们处于空闲状态。
+### 空闲连接
+show processlist：Command列显示为Sleep的这一行，就表示现在系统里面有一个空闲连接。
+> 数据库的客户端太久没响应，连接器就会自动断开了，这个时间参数是wait_timeout控制住的，默认时长为8小时。断开后重连的时候会报错，如果你想再继续操作，你就需要重连了。
+
+解决方案：
+* 重新连接
+* 使用长连接
+
+长连接的问题：
+* 使用长连接之后，内存会飙得很快，MySQL在执行过程中临时使用的内存是管理在连接对象里面的。只有在连接断开的时候才能得到释放，那如果一直使用长连接，那就会导致OOM（Out Of Memory），会导致MySQL重启，在JVM里面就会导致频繁的Full GC。
+
+解决方案：
+* 定期断开长连接，使用一段时间后，或者程序里面判断执行过一个占用内存比较大的查询后就断开连接，需要的时候重连就好了。
+* 执行比较大的一个查询后，执行mysql_reset_connection可以重新初始化连接资源。这个过程相比上面一种会好点，不需要重连，但是会初始化连接的状态。
+
+## 查询缓存
+MySQL拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句。
+
+同一条语句在MySQL执行两次，第一次和后面的时间是不一样的，后者明显快一些，这就是因为缓存的存在。
+
+跟Redis一样，只要是你之前执行过的语句，都会在内存里面用key-value形式存储着。
+
+查询的时候就会拿着语句先去缓存中查询，如果能够命中就返回缓存的value，如果不命中就执行后面的阶段。
+
+### 缓存利大于弊
+缓存的失效很容易，只要对表有任何的更新，这个表的所有查询缓存就会全部被清空，就会出现缓存还没使用，就直接被清空了，或者积累了很多缓存准备用来着，但是一个更新打回原形。
+
+这就导致查询的命中率低的可怕，只有那种只查询不更新的表适用缓存，但是这样的表往往很少存在，一般都是什么配置表之类的。
+
+### 不用缓存的操作
+显示调用，把query_cache_type设置成为DEMAND，这样SQL默认不适用缓存，想用缓存就用SQL_CACHE。
+
+看sql执行时间，但是可能是有缓存的，一般我们就在sql前面使用SQL_NO_CACHE就可以知道真正的查询时间了。
+```sql
+select SQL_NO_CACHE * from A
+```
+
+## 分析器
+在缓存没有命中的情况下，就开始执行语句了，检查SQL语句是否有问题，先做词法分析（语句有这么多单词、空格，MySQL就需要识别每个字符串所代表的是什么，是关键字，还是表名，还是列名等等。），然后语法分析（根据词法分析的结果，语法分析会判断你sql的对错，错了会提醒你的，并且会提示你哪里错了。）
+
+## 优化器
+分析无误后就进入优化器，优化的东西主要是：确认使用哪一个索引，使用你的主键索引，联合索引还是什么索引更好。；对执行顺序优化，条件那么多，先查哪个表，还是先关联，会出现很多方案，最后由优化器决定选用哪种方案。
+
+## 执行器
+优化后就执行了，第一步做权限的判断；执行的时候，就一行一行的去判断是否满足条件，有索引的执行起来可能就好点，一行行的判断就像是接口都提前在引擎定义好了，所以比较快。
+
+# 索引
 
 ### 是什么
 
@@ -179,7 +234,7 @@ B+树是平衡树的一种，是不会退化成链表的，树的高度都是相
 * 尽可能的扩展索引，不要新建立索引。比如表中已经有了a的索引，现在要加（a,b）的索引，那么只需要修改原来的索引即可。
 * 单个多列组合索引和多个单列索引的检索查询效果不同，因为在执行SQL时，~~MySQL只能使用一个索引，会从多个单列索引中选择一个限制最为严格的索引 --- 还是应该建立起比较好的索引，而不应该依赖于“合并索引”这么一个策略)。
 * “合并索引”策略简单来讲，就是使用多个单列索引，然后将这些结果用“union或者and”来合并起来
-## 锁
+# 锁
 
 ### 为什么要学习锁
 即使我们不会这些锁知识，我们的程序在一般情况下还是可以跑得好好的。因为这些锁数据库隐式帮我们加了
@@ -214,3 +269,144 @@ InnoDB只有通过索引条件检索数据才使用行级锁，否则，InnoDB�
     * 读写阻塞：当前用户在读数据，其他的用户不能修改当前用户读的数据，会加锁
     * 写写阻塞：当前用户在修改数据，其他的用户不能修改当前用户正在修改的数据，会加锁
 
+# MySQL主从复制
+> 将主数据库的DDL和DML操作通过二进制日志传到从数据库上，然后对这些日志进行重新执行，从而使从数据库和主数据库的数据保持一致
+
+## 原理
+* MySql主库在事务提交时会把数据变更作为事件记录在二进制日志Binlog中；
+* 主库推送二进制日志文件Binlog中的事件到从库的中继日志Relay Log中，之后从库根据中继日志重做数据变更操作，通过逻辑复制来达到主库和从库的数据一致性；
+* MySql通过三个线程来完成主从库间的数据复制，其中Binlog Dump线程跑在主库上，I/O线程和SQL线程跑着从库上；
+* 当在从库上启动复制时，首先创建I/O线程连接主库，主库随后创建Binlog Dump线程读取数据库事件并发送给I/O线程，I/O线程获取到事件数据后更新到从库的中继日志Relay Log中去，之后从库上的SQL线程读取中继日志Relay Log中更新的数据库事件并应用
+
+## Docker搭建测试
+### 主实例搭建
+运行MySQL主实例：
+```shell
+docker run -p 3307:3306 --name mysql-master \
+-v /mydata/mysql-master/log:/var/log/mysql \
+-v /mydata/mysql-master/data:/var/lib/mysql \
+-v /mydata/mysql-master/conf:/etc/mysql \
+-e MYSQL_ROOT_PASSWORD=root  \
+-d mysql:5.7
+```
+
+在mysql的配置文件夹/mydata/mysql-master/conf中创建一个配置文件my.cnf：
+```shell
+touch my.cnf
+```
+修改配置文件my.cnf，配置信息如下：
+```cnf
+[mysqld]
+## 设置server_id，同一局域网中需要唯一
+server_id=101
+## 指定不需要同步的数据库名称
+binlog-ignore-db=mysql
+## 开启二进制日志功能
+log-bin=mall-mysql-bin
+## 设置二进制日志使用内存大小（事务）
+binlog_cache_size=1M
+## 设置使用的二进制日志格式（mixed,statement,row）
+binlog_format=mixed
+## 二进制日志过期清理时间。默认值为0，表示不自动清理。
+expire_logs_days=7
+## 跳过主从复制中遇到的所有错误或指定类型的错误，避免slave端复制中断。
+## 如：1062错误是指一些主键重复，1032错误是因为主从数据库数据不一致
+slave_skip_errors=1062
+```
+修改完配置后重启实例，并进入到master容器中，连接到客户端：
+```shell
+docker restart mysql-master
+docker exec -it mysql-master /bin/bash
+mysql -uroot -proot
+```
+创建数据同步用户
+```shell
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'slave'@'%';
+```
+
+### 从实例搭建
+运行MySQL从实例
+```shell
+docker run -p 3308:3306 --name mysql-slave \
+-v /mydata/mysql-slave/log:/var/log/mysql \
+-v /mydata/mysql-slave/data:/var/lib/mysql \
+-v /mydata/mysql-slave/conf:/etc/mysql \
+-e MYSQL_ROOT_PASSWORD=root  \
+-d mysql:5.7
+```
+在mysql的配置文件夹/mydata/mysql-slave/conf中创建一个配置文件my.cnf，并修改：
+```shell
+touch my.cnf
+```
+```cnf
+mysqld]
+## 设置server_id，同一局域网中需要唯一
+server_id=102
+## 指定不需要同步的数据库名称
+binlog-ignore-db=mysql
+## 开启二进制日志功能，以备Slave作为其它数据库实例的Master时使用
+log-bin=mall-mysql-slave1-bin
+## 设置二进制日志使用内存大小（事务）
+binlog_cache_size=1M
+## 设置使用的二进制日志格式（mixed,statement,row）
+binlog_format=mixed
+## 二进制日志过期清理时间。默认值为0，表示不自动清理。
+expire_logs_days=7
+## 跳过主从复制中遇到的所有错误或指定类型的错误，避免slave端复制中断。
+## 如：1062错误是指一些主键重复，1032错误是因为主从数据库数据不一致
+slave_skip_errors=1062
+## relay_log配置中继日志
+relay_log=mall-mysql-relay-bin
+## log_slave_updates表示slave将复制事件写进自己的二进制日志
+log_slave_updates=1
+## slave设置为只读（具有super权限的用户除外）
+read_only=1
+```
+修改完配置后重启实例：
+```shell
+docker restart mysql-slave
+```
+
+### 主从数据库进行连接
+连接到主数据库的mysql客户端，查看主数据库状态：
+```shell
+mysql> show master status;
+```
+进入mysql-slave容器中，连接到客户端，在数据库中配置主从复制
+```shell
+change master to master_host='192.168.6.132', master_user='slave', master_password='123456', master_port=3307, master_log_file='mall-mysql-bin.000001', master_log_pos=617, master_connect_retry=30;
+```
+查看主从同步状态
+```
+show slave status \G;
+```
+开启主从同步
+```
+start slave;
+```
+参数说明
+```
+master_host：主数据库的IP地址；
+master_port：主数据库的运行端口；
+master_user：在主数据库创建的用于同步数据的用户账号；
+master_password：在主数据库创建的用于同步数据的用户密码；
+master_log_file：指定从数据库要复制数据的日志文件，通过查看主数据的状态，获取File参数；
+master_log_pos：指定从数据库从哪个位置开始复制数据，通过查看主数据的状态，获取Position参数；
+master_connect_retry：连接失败重试的时间间隔，单位为秒。
+```
+
+### 测试
+* 在主实例中创建一个数据库yks
+* 在从实例中查看数据库，发现也有一个yks数据库，可以判断主从复制已经搭建成功。
+
+
+
+# MySQL调优
+* 加索引
+* 先用explain跑一遍SQL
+* 排除缓存干扰（SQL NoCache）
+MySQL8.0之前数据库是存在缓存的，有可能缓存失效，导致Response time 时高时低，缓存失效的原因：
+当前MySQL版本存在缓存时，每次请求的查询语句都会以key=value的形式存入到缓存中，当我们对一张表进行更新，这个表所有的缓存都会被清空，这个时候缓存就走不到了
+8.0之后的版本，缓存就被取消了
+* explain
+* 

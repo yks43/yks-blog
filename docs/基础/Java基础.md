@@ -473,7 +473,7 @@ Java Io 流共涉及 40 多个类，这些类看上去很杂乱，但实际上�
 ```java
 Class.forName("com.mysql.jdbc.Driver");
 
-//获取与数据库连接的对象-Connetcion
+//获取与数据库连接的对象-Connection
 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/yks43", "root", "root");
 
 //获取执行sql语句的statement对象
