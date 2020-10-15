@@ -77,7 +77,7 @@ Spring IOC容器是怎么实现对象的创建和依赖的：
 2.  根据注册表加载、实例化bean、建立Bean与Bean之间的依赖关系
 3.  将这些准备就绪的Bean放到Map缓存池中，等待应用程序调用
 
-## Bean
+# Bean
 
 ##### 作用域
 
@@ -94,13 +94,20 @@ Spring IOC容器是怎么实现对象的创建和依赖的：
 
 ![](../images/bean的生命周期.jpg)
 
-## 实际应用
+##### 实际应用
 日常开发中，我们很多时候用@Component注解标识将对象放到「IOC容器」中，用@Autowired注解将对象注入
 
 下面这张图就很好总结了以各种方式来对Bean的定义和注入。
 ![](../images/bean的定义和注入.jpg)
 
+##### 多线程问题
+
+>    Spring用的ThreadLocal
+
+我们知道在一般情况下，只有无状态的Bean才可以在多线程环境下共享，在Spring中，绝大部分Bean都可以声明为singleton作用域。就是因为Spring对一些Bean（如RequestContextHolder、**TransactionSynchronizationManager**、LocaleContextHolder等）中非线程安全状态的“状态性对象”采用ThreadLocal封装，让它们也成为线程安全的“状态性对象”，因此，有状态的Bean就能够以singleton的方式在多线程中工作。
+
 # AOP
+
 ### 是什么
 AOP：Aspect Object Programming  「面向切面编程」
 Spring AOP主要做的事情就是：「把重复的代码抽取，在运行的时候往业务方法上动态植入“切面类代码”」
@@ -167,11 +174,37 @@ Spring事务基于Spring AOP，Spring AOP底层用的动态代理，动态代理
 ### 第二种
 带有@Transactional注解所包围的方法就能被Spring事务管理起来，那如果我在当前类下使用一个没有事务的方法去调用一个有事务的方法，那我们这次调用会怎么样？是否会有事务呢？
 
+![Spring会自动生成代理对象](https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib3icByoHrJW0micXhLLaMqUZ6VDo6CZg2cfBDIIv0ic6xDRT8ulbM6zjbE1UsmHU101LyZHFVEY3dHUQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)Spring会自动生成代理对象
 
+显然地，我们拿到的是代理(Proxy)对象，调用`addEmployee2Controller()`方法，而`addEmployee2Controller()`方法的逻辑是`target.addEmployee()`，调用回原始对象(target)的`addEmployee()`。所以这次的调用**压根就没有事务存在**，更谈不上说Spring事务传播机制了。
 
 
 ## 事务传播机制
-> 在当前含有事务方法内部调用其他的方法(无论该方法是否含有事务)，这就属于Spring事务传播机制的知识点范畴了。
+> 在当前含有事务方法内部调用其他的方法(无论该方法是否含有事务)
+
+Propagation ：　　key属性确定代理应该给哪个方法增加事务行为。这样的属性最重要的部份是传播行为。有以下选项可供使用：
+PROPAGATION_REQUIRED--支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
+PROPAGATION_SUPPORTS--支持当前事务，如果当前没有事务，就以非事务方式执行。
+PROPAGATION_MANDATORY--支持当前事务，如果当前没有事务，就抛出异常。
+PROPAGATION_REQUIRES_NEW--新建事务，如果当前存在事务，把当前事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。
+PROPAGATION_NOT_SUPPORTED--以非事务方式执行操作，如果当前存在事务，就把当前事务挂起，执行当前逻辑，结束后恢复上下文的事务。
+PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛出异常。
+
+## 事务的隔离级别
+
+1.  ISOLATION_DEFAULT： 这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别.
+       另外四个与JDBC的隔离级别相对应
+
+2.  ISOLATION_READ_UNCOMMITTED： 这是事务最低的隔离级别，它充许令外一个事务可以看到这个事务未提交的数据。
+       这种隔离级别会产生脏读，不可重复读和幻像读。
+
+3.  ISOLATION_READ_COMMITTED： 保证一个事务修改的数据提交后才能被另外一个事务读取。另外一个事务不能读取该事务未提交的数据
+
+4.  ISOLATION_REPEATABLE_READ： 这种事务隔离级别可以防止脏读，不可重复读。但是可能出现幻像读。
+       它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了避免下面的情况产生(不可重复读)。
+
+5.  ISOLATION_SERIALIZABLE 这是花费最高代价但是最可靠的事务隔离级别。事务被处理为顺序执行。
+       除了防止脏读，不可重复读外，还避免了幻像读。
 
 
 
