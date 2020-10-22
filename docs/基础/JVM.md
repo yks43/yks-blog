@@ -1,4 +1,78 @@
 # JVM
+
+## 类加载
+
+1. javac编译生成.class文件
+2. java执行.class文件解析得到结果
+
+### 编译
+* 分析和输入到符号表
+* 注解处理
+* 语义分析和生成.class文件
+
+### 加载
+#### 加载时机
+虚拟机规范则是严格规定了有且只有5种情况必须立即对类进行“初始化”(class文件加载到JVM中)：
+
+* 创建类的实例(new 的方式)。访问某个类或接口的静态变量，或者对该静态变量赋值，调用类的静态方法
+
+* 反射的方式
+
+* 初始化某个类的子类，则其父类也会被初始化
+
+* Java虚拟机启动时被标明为启动类的类，直接使用java.exe命令来运行某个主类（包含main方法的那个类）
+
+* 当使用JDK1.7的动态语言支持时(....)
+
+所以说：
+
+* Java类的加载是动态的，它并不会一次性将所有类全部加载后再运行，而是保证程序运行的基础类(像是基类)完全加载到jvm中，至于其他类，则在需要的时候才加载。这当然就是为了节省内存开销。
+
+#### 如何加载
+class文件是通过类的加载器装载到jvm中的！
+Java默认有三种类加载器
+* 1）Bootstrap ClassLoader：负责加载$JAVA_HOME中jre/lib/rt.jar里所有的class，由C++实现，不是ClassLoader子类
+
+* 2）Extension ClassLoader：负责加载java平台中扩展功能的一些jar包，包括$JAVA_HOME中jre/lib/ext/*.jar或-Djava.ext.dirs指定目录下的jar包
+
+* 3）App ClassLoader：负责记载classpath中指定的jar包及目录中class
+
+**工作过程**：
+1、当AppClassLoader加载一个class时，它首先不会自己去尝试加载这个类，而是把类加载请求委派给父类加载器ExtClassLoader去完成。
+
+2、当ExtClassLoader加载一个class时，它首先也不会自己去尝试加载这个类，而是把类加载请求委派给BootStrapClassLoader去完成。
+
+3、如果BootStrapClassLoader加载失败（例如在$JAVA_HOME/jre/lib里未查找到该class），会使用ExtClassLoader来尝试加载；
+
+4、若ExtClassLoader也加载失败，则会使用AppClassLoader来加载
+
+5、如果AppClassLoader也加载失败，则会报出异常ClassNotFoundException
+
+其实这就是所谓的**双亲委派模型**。简单来说：
+> 如果一个类加载器收到了类加载的请求，它首先不会自己去尝试加载这个类，而是把请求委托给父加载器去完成，依次向上。
+
+好处：
+
+* 防止内存中出现多份同样的字节码(安全性角度)
+
+特别说明：
+
+* 类加载器在成功加载某个类之后，会把得到的 java.lang.Class类的实例缓存起来。下次再请求加载该类的时候，类加载器会直接使用缓存的类的实例，而不会尝试再次加载。
+
+#### 加载完之后
+
+1、通过 java.exe运行 Test1.class，随后被加载到JVM中，元空间存储着类的信息(包括类的名称、方法信息、字段信息..)。
+
+2、然后JVM找到Test1的主函数入口(main)，为main函数创建栈帧，开始执行main函数
+
+3、main函数的第一条命令是 User User=new User();就是让JVM创建一个User对象，但是这时候方法区中没有User类的信息，所以JVM马上加载User类，把User类的类型信息放到方法区中(元空间)
+
+4、加载完User类之后，Java虚拟机做的第一件事情就是在堆区中为一个新的User实例分配内存, 然后调用构造函数初始化User实例，这个User实例持有着指向方法区的User类的类型信息（其中包含有方法表，java动态绑定的底层实现）的引用
+
+5、当使用 User.setName("User");的时候，JVM根据User引用找到User对象，然后根据User对象持有的引用定位到方法区中User类的类型信息的方法表，获得 setName()函数的字节码的地址
+
+6、为 setName()函数创建栈帧，开始运行 setName()函数
+
 ## 内存结构
 
 * 堆
