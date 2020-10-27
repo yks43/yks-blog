@@ -50,6 +50,26 @@ Iterator 主要是用来遍历集合用的，它的特点是更加安全，因�
 
 ### 如何使用？
 通过使用迭代器来遍历 HashMap，演示一下 迭代器 Iterator 的使用。
+
+### fail-fast和fail-safe
+#### fail-fast
+> fail-fast（快速失败）机制指的是当遍历集合的过程中，如果集合的结构发生了改变，例如进行了put操作或是扩容操作，那么程序就会抛出Concurrent Modification Exception。java.util包下的集合类都是快速失败的，不能在多线程下发生并发修改（迭代过程中被修改）。
+
+##### fail-fast工作原理
+迭代器在执行next()等方法的时候，都会调用checkForComodification()这个方法，查看modCount==expectedModCount?如果相等则抛出异常。
+
+expectedModcount:这个值在对象被创建的时候就被赋予了一个固定的值modCount。也就是说这个值是不变的。也就是说，如果在迭代器遍历元素的时候，如果modCount这个值发生了改变（当我们对集合的元素的个数做出改变的时候，modCount的值就会被改变，如果删除，插入。但修改则不会。），那么再次遍历时就会抛出异常。
+
+#### fail-safe
+> fail-safe（安全失败）机制是指任何对集合结构的修改都会在一个复制的集合上进行修改，因此不会抛出ConcurrentModificationException。java.util.concurrent包下的容器都是安全失败，可以在多线程下并发使用，并发修改。
+
+##### 缺点
+* 复制时需要额外的空间和时间上的开销。
+* 不能保证遍历的是最新内容。
+
+fail-safe的具体体现可见java.util.concurrentx中类的实现，例如使用 CopyOnWriterArrayList代替ArrayList，CopyOnWriterArrayList在是使用上跟ArrayList几乎一样，CopyOnWriter是写时复制的容器(COW)，在读写时是线程安全的。该容器在对add和remove等操作时，并不是在原数组上进行修改，而是将原数组拷贝一份，在新数组上进行修改，待完成后，才将指向旧数组的引用指向新数组，所以对于CopyOnWriterArrayList在迭代过程并不会发生fail-fast现象。但 CopyOnWrite容器只能保证数据的最终一致性，不能保证数据的实时一致性。
+
+
 ``` java
 Map<Integer, String> map = new HashMap();
 map.put(1, "Java");
