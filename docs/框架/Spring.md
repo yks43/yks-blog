@@ -176,8 +176,65 @@ Spring事务基于Spring AOP，Spring AOP底层用的动态代理，动态代理
 
 # 事务
 
-## 理解
-> Spring事务管理用的是AOP，AOP底层用的是动态代理。所以如果我们在类或者方法上标注注解@Transactional，那么会生成一个代理对象。
+## 原理
+> Spring事务的本质就是数据库对事务的支持，使用Spring管理事务后，coding时可以省略对事务的操作，通过AOP将操作在代理类中加上，关键切片类->TransactionAspectSupport
+
+## 什么时候回滚
+
+>   所拦截的方法有指定异常抛出，事务自动回滚；默认情况下，事务只对Error与RuntimeException及其子类有效，如果一般的Exception想回滚，需要配置rollbackFor=Exception.Class
+
+## 什么时候失效
+
+##### 发生自调用
+
+*   同一个Service中，未被事务管理的函数调用被事务管理的函数，本质是本类this调用而不是代理类，无法通过AOP增强
+
+##### 方法修饰符不是public
+
+*   private不符合逻辑，被事务管理的函数不被调用毫无意义
+*   其他修饰符不会被事务管理
+
+##### 发生了错误的异常
+
+*   被捕获的异常
+*   非RuntimeExecption未加上rollbackFor
+
+##### 数据库不支持事务
+
+>   Spring事务用的是数据库的事务，如果Spring不支持事务，Spring事务肯定不会生效。
+
+## 事务隔离
+
+>   Spring事务隔离在MySQL事务隔离的基础上抽象了一种默认隔离级别，表示数据库默认的隔离级别
+
+*   MySQL配置的隔离级别与Spring配置的隔离级别冲突时，以Spring配置为准
+*   Spring配置的隔离级别MySQL不支持时，以MySQL为准
+
+## 事务传播机制
+
+> 在当前含有事务方法内部调用其他的方法(无论该方法是否含有事务)
+
+##### PROPAGATION_REQUIRED
+
+>   支持当前事务，如果当前没有事务，就新建一个事务
+
+比如说，ServiceB.methodB的事务级别定义为PROPAGATION_REQUIRED, 那么由于执行ServiceA.methodA的时候，
+ServiceA.methodA已经起了事务，这时调用ServiceB.methodB，ServiceB.methodB看到自己已经运行在ServiceA.methodA
+的事务内部，就不再起新的事务。而假如ServiceA.methodA运行的时候发现自己没有在事务中，他就会为自己分配一个事务。
+这样，在ServiceA.methodA或者在ServiceB.methodB内的任何地方出现异常，事务都会被回滚。即使ServiceB.methodB的事务已经被
+提交，但是ServiceA.methodA在接下来fail要回滚，ServiceB.methodB也要回滚
+
+
+
+##### PROPAGATION_REQUIRES_NEW
+
+>   新建事务，如果当前存在事务，把当前事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。
+
+
+
+
+
+
 
 ## 可能出现的情况
 ### 第一种
@@ -192,32 +249,6 @@ Spring事务基于Spring AOP，Spring AOP底层用的动态代理，动态代理
 显然地，我们拿到的是代理(Proxy)对象，调用`addEmployee2Controller()`方法，而`addEmployee2Controller()`方法的逻辑是`target.addEmployee()`，调用回原始对象(target)的`addEmployee()`。所以这次的调用**压根就没有事务存在**，更谈不上说Spring事务传播机制了。
 
 
-## 事务传播机制
-> 在当前含有事务方法内部调用其他的方法(无论该方法是否含有事务)
-
-Propagation ：　　key属性确定代理应该给哪个方法增加事务行为。这样的属性最重要的部份是传播行为。有以下选项可供使用：
-PROPAGATION_REQUIRED--支持当前事务，如果当前没有事务，就新建一个事务。这是最常见的选择。
-PROPAGATION_SUPPORTS--支持当前事务，如果当前没有事务，就以非事务方式执行。
-PROPAGATION_MANDATORY--支持当前事务，如果当前没有事务，就抛出异常。
-PROPAGATION_REQUIRES_NEW--新建事务，如果当前存在事务，把当前事务挂起，执行当前新建事务完成以后，上下文事务恢复再执行。
-PROPAGATION_NOT_SUPPORTED--以非事务方式执行操作，如果当前存在事务，就把当前事务挂起，执行当前逻辑，结束后恢复上下文的事务。
-PROPAGATION_NEVER--以非事务方式执行，如果当前存在事务，则抛出异常。
-
-## 事务的隔离级别
-
-1.  ISOLATION_DEFAULT： 这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别.
-       另外四个与JDBC的隔离级别相对应
-
-2.  ISOLATION_READ_UNCOMMITTED： 这是事务最低的隔离级别，它充许令外一个事务可以看到这个事务未提交的数据。
-       这种隔离级别会产生脏读，不可重复读和幻像读。
-
-3.  ISOLATION_READ_COMMITTED： 保证一个事务修改的数据提交后才能被另外一个事务读取。另外一个事务不能读取该事务未提交的数据
-
-4.  ISOLATION_REPEATABLE_READ： 这种事务隔离级别可以防止脏读，不可重复读。但是可能出现幻像读。
-       它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了避免下面的情况产生(不可重复读)。
-
-5.  ISOLATION_SERIALIZABLE 这是花费最高代价但是最可靠的事务隔离级别。事务被处理为顺序执行。
-       除了防止脏读，不可重复读外，还避免了幻像读。
 
 
 
