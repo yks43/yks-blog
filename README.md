@@ -102,7 +102,7 @@
 ### Spring
 * IOC
 * AOP
-* 事务
+* [事务](docs/框架/Spring事务.md)
 
 ### MyBatis
 
@@ -143,6 +143,7 @@
 ### 数据结构
 
 ### 算法
+* [八大基础排序](docs/基本功/八大排序.md)
 
 ### 设计模式
 
@@ -158,6 +159,12 @@
 * 三太子敖丙
 
 ### APP推荐
+* JavaIDE：IDEA
+* 数据库可视化：Navicat
+* 接口测试工具：Postman
+
+### 网站推荐
+* 线上思维导图：ProcessOn
 
 ### 书籍推荐
 1. 《图解HTTP》
@@ -169,4 +176,7 @@
 * https://docsify.js.org/#/
 * https://cyc2018.github.io/CS-Notes/ 
 * https://snailclimb.gitee.io/javaguide/#/
+* https://mp.weixin.qq.com/s/lryPmrVSf7Fc55g5SsKhig
+* https://mp.weixin.qq.com/s/2l8iZeTRfMaUOcgtad1wIQ
+
 
