@@ -26,11 +26,25 @@
 3. 父类引用指向子类对象
 
 ## 数据类型
-> 四类八种
 
-### 类型转换
+1. 6种数字类型 ：byte、short、int、long、float、double
+2. 1种字符类型：char
+3. 1种布尔型：boolean。
 
-### 包装类
+这八种基本类型都有对应的包装类分别为：Byte、Short、Integer、Long、Float、Double、Character、Boolean
+
+| 基本类型 | 位数 | 字节 | 默认值  |
+| -------- | ---- | ---- | ------- |
+| int      | 32   | 4    | 0       |
+| short    | 16   | 2    | 0       |
+| long     | 64   | 8    | 0L      |
+| byte     | 8    | 1    | 0       |
+| char     | 16   | 2    | 'u0000' |
+| float    | 32   | 4    | 0f      |
+| double   | 64   | 8    | 0d      |
+| boolean  | 1    |      | false   |
+
+
 
 
 # 常见的面试问题
