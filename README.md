@@ -17,6 +17,9 @@
   * [SpringBoot](#SpringBoot)
   * [SpringCloud](#SpringCloud)
 
+* bug
+  * [bug_MySQL](#bug_MySQL)
+  * [bug_Maven](#bug_Maven)
 * 中间件
   * [RabbitMQ](#RabbtiMQ)
   * [ElasticSearch](#ElasticSearch)
@@ -72,7 +75,7 @@
 ## 数据库
 
 ### MySQL
-* 索引
+* [索引](docs/db/MySQL索引.md)
 
 * 锁
 
@@ -113,6 +116,11 @@
 ### SpringCloud
 * 组件分析
 
+## bug
+### bug_MySQL
+* [MySQL遇到的bug](docs/bug/bug_MySQL.md)
+### bug_Maven
+* [Maven遇到的bug](docs/bug/bug_Maven.md)
 
 ## 中间件
 
@@ -148,6 +156,7 @@
 ### 设计模式
 
 ### 计算机网络
+* 《图解HTTP》笔记
 
 ### 操作系统
 
@@ -162,9 +171,11 @@
 * JavaIDE：IDEA
 * 数据库可视化：Navicat
 * 接口测试工具：Postman
+* Redis可视化：AnotherRedisDesktopManager
 
 ### 网站推荐
 * 线上思维导图：ProcessOn
+* 编程在线电子书：https://github.com/justjavac/free-programming-books-zh_CN
 
 
 ### 书籍推荐
