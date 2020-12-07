@@ -127,6 +127,7 @@
 ### MQ
 * [MQ认知](docs/中间件/MQ.md)
 ### 索引库
+* [ElasticSearch]
 
 ## 工具
 
@@ -177,6 +178,8 @@
 * 线上思维导图：ProcessOn
 * 编程在线电子书：https://github.com/justjavac/free-programming-books-zh_CN
 * 计划看板：Trello
+* 刷算法：LeetCode
+* 刷题&水贴&面经：牛客网
 
 
 ### 书籍推荐
