@@ -1,43 +1,4 @@
 > 搭建个人知识体系
-
-* Java
-  * [基础](#基础)
-  * [集合](#容器)
-  * [并发](#并发)
-  * [JVM](#JVM)
-
-* 数据库
-  * [MySQL](#MySQL)
-  * [Redis](#Redis)
-
-* 框架
-  * [Spring](#Spring)
-  * [MyBatis](#MyBatis)
-  * [SpringMVC](#SpringMVC)
-  * [SpringBoot](#SpringBoot)
-  * [SpringCloud](#SpringCloud)
-
-* bug
-  * [bug_MySQL](#bug_MySQL)
-  * [bug_Maven](#bug_Maven)
-* 中间件
-  * [RabbitMQ](#RabbtiMQ)
-  * [ElasticSearch](#ElasticSearch)
-
-* 工具
-  * [Git](#Git)
-  * [Maven](#Maven)
-  * [Docker](#Docker)
-  * [Linux](#Linux)
-
-* 基本功
-  * [数据结构](#数据结构)
-  * [算法](#算法)
-  * [设计模式](#设计模式) 
-  * [计算机网络](#计算机网络)
-  * [操作系统](#操作系统)
-
-
 ## Java
 
 ### 基础
@@ -79,12 +40,12 @@
 
 * 锁
 
-* log
+* [log](docs/db/MySQL_Log.md)
 
 * SQL优化
   
 * 高可用
-  * 主从复制
+  * [主从复制](docs/db/MySQL高可用.md)
   * 读写分离
 
 
@@ -98,7 +59,12 @@
 * 高可用
   * 读写分离
   * 哨兵
-  * 集群
+  
+
+
+### ElasticSearch
+
+* [SpringBoot实操ES](./docs/db/SpringBoot实操ES.md)
 
 ## 框架
 
@@ -109,12 +75,25 @@
 
 ### MyBatis
 
+### MyBatisPlus
+
 ### SpringMVC
 
 ### SpringBoot
 
 ### SpringCloud
+* Restful API
+> REST风格的API;
+REST：表现层状态转移（URL定位资源，用HTTP动词（GET,POST,PUT,DELETE)描述操作。
+
 * 组件分析
+  * 网关
+  * 注册中心
+  * 熔断
+  * 降流
+  * 配置中心
+  * 远程调用
+  * 链路追踪
 
 ## bug
 ### bug_MySQL
@@ -126,8 +105,7 @@
 
 ### MQ
 * [MQ认知](docs/中间件/MQ.md)
-### 索引库
-* [ElasticSearch]
+
 
 ## 工具
 
