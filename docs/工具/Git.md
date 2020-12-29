@@ -146,3 +146,4 @@ git config --global --unset http.proxy
 5. 然后再切换到test分支，pull下最新代码
 6. 再合并sky分支，有冲突继续解决，然后直接push就可以了，代码就提到test分支了
 7. 后续就是部署，测试，该bug，部署，测试，验收，发布生产了
+8. 生产上出bug，直接拉一个新的分支hotfix1，修复bug，提交测试，然后直接把hotfix1合到master(生产)部署上线
